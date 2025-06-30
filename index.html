@@ -1,493 +1,641 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Picture Pick Challenge</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inter font from Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signal Strike: Lucky Box</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-      body {
-        font-family: "Inter", sans-serif;
-        background-color: #f0f2f5; /* Light gray background */
-      }
-      /* Custom styles for glowing button effect */
-      .glow-button {
-        transition: all 0.3s ease;
-        box-shadow: 0 0 0px rgba(0, 0, 0, 0);
-      }
-      .glow-button:hover {
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.7); /* Blue glow on hover */
-        transform: translateY(-2px);
-      }
-      .picture-card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      }
-      .picture-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-      }
-      .picture-card.selected {
-        border: 4px solid #10b981; /* Green border for selected picture */
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
-        transform: scale(1.03);
-      }
+        /* General Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #1a1a2e; /* Dark background similar to your image */
+            color: #e0e0e0; /* Light text color */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .game-container {
+            background-color: #1a1a2e; /* Match body for seamless look */
+            border: 2px solid #2e2e4a;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            text-align: center;
+            width: 95%;
+            max-width: 800px;
+            margin: 20px auto;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #bb86fc; /* Purple accent for title */
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: #888;
+            margin-bottom: 25px;
+        }
+
+        /* Top Bar - Simulated Crypto Prices */
+        .top-bar {
+            display: flex;
+            justify-content: space-around;
+            background-color: #2e2e4a;
+            padding: 10px 0;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .currency-info {
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+            color: #cccccc;
+            margin: 5px 10px; /* Spacing for wrap */
+        }
+
+        .currency-info i {
+            margin-right: 5px;
+        }
+
+        .currency-info .change.up {
+            color: #00ff80; /* Green for positive change */
+            margin-left: 5px;
+        }
+
+        .currency-info .change.down {
+            color: #ff4d4d; /* Red for negative change */
+            margin-left: 5px;
+        }
+
+
+        .game-info {
+            font-size: 1.3em;
+            color: #00bcd4; /* Cyan accent */
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .pot-display {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #ffeb3b; /* Yellow for pot */
+            margin-bottom: 30px;
+            text-shadow: 0 0 8px rgba(255, 235, 59, 0.7);
+        }
+
+        .message-area {
+            background-color: #3b3b5b; /* Slightly lighter dark background */
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: 600;
+            min-height: 40px; /* Ensure consistent height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .boxes-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 40px;
+            padding: 0 10px; /* Add some padding to prevent boxes from touching edges */
+        }
+
+        .box {
+            width: 120px;
+            height: 120px;
+            background-color: #5d2b8b; /* Deep purple */
+            border: 4px solid #7b3eab; /* Lighter purple border */
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            font-weight: 800;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            user-select: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden; /* For inner glow */
+        }
+
+        .box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            pointer-events: none;
+        }
+
+        .box:hover:not(.selected):not(.disabled) {
+            background-color: #7b3eab; /* Lighter purple on hover */
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+        .box:hover:not(.selected):not(.disabled)::before {
+            box-shadow: inset 0 0 20px 5px rgba(255, 255, 255, 0.3);
+        }
+
+        .box.selected {
+            background-color: #ff9800; /* Orange for selected */
+            border-color: #f57c00;
+            cursor: not-allowed;
+            transform: scale(0.98);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .box.selected .box-label {
+            font-size: 0.8em;
+            color: #4CAF50; /* Green for 'Chosen!' */
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .box.disabled {
+            background-color: #333; /* Darker grey when revealed */
+            border-color: #555;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .box.winner {
+            background-color: #4CAF50; /* Green for winner */
+            border-color: #8BC34A;
+            animation: pulse-green 1.5s infinite alternate, glow-green 1s infinite alternate;
+            box-shadow: 0 0 30px #4CAF50, 0 0 60px #4CAF50;
+            color: #fff;
+        }
+
+        .box.loser {
+            background-color: #D32F2F; /* Red for loser */
+            border-color: #F44336;
+            animation: shake 0.5s ease-in-out;
+            color: #fff;
+        }
+
+        .box .fa-solid {
+            font-size: 0.8em; /* Adjust icon size within box */
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .box .player-id {
+            font-size: 0.35em;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.7);
+            position: absolute;
+            bottom: 5px;
+            text-shadow: none;
+        }
+
+
+        .game-button {
+            background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .game-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background-image: linear-gradient(to right, #2575fc 0%, #6a11cb 100%);
+        }
+
+        .game-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: #2e2e4a;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            transform: translateY(-50px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            border: 2px solid #bb86fc;
+        }
+
+        .modal-overlay.visible .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-content h2 {
+            color: #bb86fc;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .modal-content p {
+            color: #e0e0e0;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .modal-input {
+            width: calc(100% - 30px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #5d2b8b;
+            border-radius: 8px;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            font-size: 1em;
+        }
+        .modal-input::placeholder {
+            color: #888;
+        }
+
+        /* Animations */
+        @keyframes pulse-green {
+            0% { transform: scale(1); box-shadow: 0 0 10px #4CAF50, 0 0 20px #4CAF50; }
+            50% { transform: scale(1.03); box-shadow: 0 0 20px #4CAF50, 0 0 40px #4CAF50; }
+            100% { transform: scale(1); box-shadow: 0 0 10px #4CAF50, 0 0 20px #4CAF50; }
+        }
+
+        @keyframes glow-green {
+            0% { border-color: #8BC34A; }
+            50% { border-color: #C8E6C9; }
+            100% { border-color: #8BC34A; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            .game-info, .pot-display {
+                font-size: 1.1em;
+            }
+            .box {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5em;
+            }
+            .game-button {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .box {
+                width: 80px;
+                height: 80px;
+                font-size: 2em;
+                border-radius: 15px;
+                border-width: 3px;
+            }
+            .box.selected .box-label {
+                font-size: 0.7em;
+            }
+            .boxes-container {
+                gap: 15px;
+            }
+            .game-container {
+                padding: 20px 15px;
+                margin: 10px auto;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .pot-display {
+                font-size: 1.4em;
+            }
+            .message-area {
+                font-size: 0.95em;
+                min-height: 35px;
+            }
+            .currency-info {
+                font-size: 0.8em;
+                margin: 3px 8px;
+            }
+        }
     </style>
-  </head>
-  <body
-    class="min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8"
-  >
-    <!-- Main Container -->
-    <div
-      class="bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl w-full max-w-6xl"
-    >
-      <!-- Header Section -->
-      <header class="text-center mb-10">
-        <h1
-          class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight"
-        >
-          Picture Pick Challenge
-        </h1>
-        <p class="text-lg sm:text-xl text-gray-600">
-          Deposit to play, pick your lucky picture, and win the pot!
-        </p>
-      </header>
+</head>
+<body>
+    <div class="game-container">
+        <div class="top-bar">
+            <div class="currency-info"><i class="fas fa-bitcoin"></i> TC: $27934.97 <span class="change down">(-0.45)</span></div>
+            <div class="currency-info"><i class="fab fa-ethereum"></i> ETH: $1855.27 <span class="change up">(0.97)</span></div>
+            <div class="currency-info"><i class="fas fa-sun"></i> SOL: $38.39 <span class="change up">(0.08)</span></div>
+            <div class="currency-info"><i class="fas fa-fingerprint"></i> ADA: $0.61 <span class="change down">(-0.52)</span></div>
+            <div class="currency-info"><i class="fas fa-coins"></i> XRP: $-0.57 <span class="change down">(-0.80)</span></div>
+        </div>
 
-      <!-- Game Information Section -->
-      <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-        <div class="bg-blue-50 p-6 rounded-lg shadow-md border border-blue-200">
-          <h2 class="text-2xl font-bold text-blue-700 mb-4 flex items-center">
-            <svg
-              class="w-6 h-6 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.592 1L21 12m-2.208 9L15 12m-6 0L3 12m9 2c-1.11 0-2.08-.402-2.592-1L3 12m2.208-9L9 12m6 0l-3 3m0-3V4"
-              ></path>
-            </svg>
-            Game Rules
-          </h2>
-          <ul class="list-disc list-inside text-gray-700 space-y-2">
-            <li>10 players required to start the game.</li>
-            <li>Each player deposits an agreed-upon amount.</li>
-            <li>10 unique pictures will be displayed.</li>
-            <li>Each player picks one picture.</li>
-            <li>
-              The winner is the one who picks the "lucky" picture and takes the
-              entire prize pool!
-            </li>
-          </ul>
-        </div>
-        <div
-          class="bg-green-50 p-6 rounded-lg shadow-md border border-green-200"
-        >
-          <h2 class="text-2xl font-bold text-green-700 mb-4 flex items-center">
-            <svg
-              class="w-6 h-6 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.592 1L21 12m-2.208 9L15 12m-6 0L3 12m9 2c-1.11 0-2.08-.402-2.592-1L3 12m2.208-9L9 12m6 0l-3 3m0-3V4"
-              ></path>
-            </svg>
-            Game Status
-          </h2>
-          <div class="text-gray-700 space-y-2">
-            <p class="flex items-center">
-              <strong class="mr-2">Players Joined:</strong>
-              <span id="players-joined">0</span> / 10
-            </p>
-            <p class="flex items-center">
-              <strong class="mr-2">Prize Pool:</strong> $<span id="prize-pool"
-                >0.00</span
-              >
-            </p>
-            <p class="flex items-center">
-              <strong class="mr-2">Your ID:</strong>
-              <span id="user-id">Loading...</span>
-            </p>
-          </div>
-          <div class="mt-4 flex flex-col sm:flex-row gap-4">
-            <button
-              id="join-game-btn"
-              class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg glow-button flex-grow"
-            >
-              Join Game
-            </button>
-            <button
-              id="declare-winner-btn"
-              class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg glow-button flex-grow"
-              disabled
-            >
-              Declare Winner
-            </button>
-          </div>
-        </div>
-      </section>
+        <h1><i class="fas fa-crosshairs"></i> Signal Strike</h1>
+        <p class="subtitle">Test your luck, win big!</p>
 
-      <!-- Picture Selection Area -->
-      <section class="mb-10 text-center">
-        <h2 class="text-3xl font-bold text-gray-900 mb-6">
-          Pick Your Lucky Picture!
-        </h2>
-        <div
-          id="pictures-container"
-          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 justify-center"
-        >
-          <!-- Placeholder for 10 pictures -->
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="1"
-          >
-            <img
-              src="https://placehold.co/200x200/B0E0E6/000000?text=Pic+1"
-              alt="Picture 1"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 1</div>
-          </div>
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="2"
-          >
-            <img
-              src="https://placehold.co/200x200/F08080/000000?text=Pic+2"
-              alt="Picture 2"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 2</div>
-          </div>
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="3"
-          >
-            <img
-              src="https://placehold.co/200x200/90EE90/000000?text=Pic+3"
-              alt="Picture 3"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 3</div>
-          </div>
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="4"
-          >
-            <img
-              src="https://placehold.co/200x200/DDA0DD/000000?text=Pic+4"
-              alt="Picture 4"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 4</div>
-          </div>
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="5"
-          >
-            <img
-              src="https://placehold.co/200x200/FFD700/000000?text=Pic+5"
-              alt="Picture 5"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 5</div>
-          </div>
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="6"
-          >
-            <img
-              src="https://placehold.co/200x200/ADD8E6/000000?text=Pic+6"
-              alt="Picture 6"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 6</div>
-          </div>
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="7"
-          >
-            <img
-              src="https://placehold.co/200x200/F0E68C/000000?text=Pic+7"
-              alt="Picture 7"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 7</div>
-          </div>
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="8"
-          >
-            <img
-              src="https://placehold.co/200x200/D3D3D3/000000?text=Pic+8"
-              alt="Picture 8"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 8</div>
-          </div>
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="9"
-          >
-            <img
-              src="https://placehold.co/200x200/A20025/FFFFFF?text=Pic+9"
-              alt="Picture 9"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 9</div>
-          </div>
-          <div
-            class="picture-card bg-gray-100 rounded-lg shadow-md overflow-hidden cursor-pointer"
-            data-id="10"
-          >
-            <img
-              src="https://placehold.co/200x200/50C878/FFFFFF?text=Pic+10"
-              alt="Picture 10"
-              class="w-full h-auto rounded-t-lg"
-            />
-            <div class="p-3 text-lg font-medium text-gray-800">Picture 10</div>
-          </div>
+        <div class="game-info">
+            Players Joined: <span id="playersJoined">0</span> / <span id="numBoxesDisplay">5</span> | Pot: <span id="currentPot">GHS 0</span>
         </div>
-        <p
-          id="message-box"
-          class="mt-6 text-xl font-semibold text-gray-800"
-        ></p>
-      </section>
 
-      <!-- Winner Declaration and Reset (Placeholder) -->
-      <section class="text-center">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">Winner!</h2>
-        <div
-          id="winner-display"
-          class="bg-yellow-100 p-6 rounded-lg shadow-inner border border-yellow-300 text-2xl font-bold text-yellow-800 mb-6 hidden"
-        >
-          The winner is: <span id="winner-name"></span>! Congratulations!
+        <div class="message-area" id="messageArea">
+            Click "Join Game" to start!
         </div>
-      </section>
+
+        <div class="boxes-container" id="boxesContainer">
+            <!-- Boxes will be generated here by JavaScript -->
+        </div>
+
+        <button id="startGameBtn" class="game-button">Join Game</button>
+        <button id="resetGameBtn" class="game-button" style="display: none;">Play Again</button>
+    </div>
+
+    <!-- Deposit Simulation Modal -->
+    <div class="modal-overlay" id="depositModal">
+        <div class="modal-content">
+            <h2>Simulated Deposit</h2>
+            <p>Enter your username and click "Confirm" to simulate depositing GHS 10 and choose your box.</p>
+            <input type="text" id="usernameInput" class="modal-input" placeholder="Enter your username">
+            <button id="confirmDepositBtn" class="game-button">Confirm GHS 10 Deposit</button>
+        </div>
     </div>
 
     <script>
-        // Game state variables
-        let gameState = {
-          players: {},
-          prizePool: 0,
-          depositAmount: 10, // Default deposit amount (you can change this)
-          luckyPictureId: null,
-          gameStarted: false,
-          winnerDeclared: false,
-          currentUserId: generateUserId(),
-          selectedPicture: null
-        };
-      
-        // DOM elements
-        const joinGameBtn = document.getElementById('join-game-btn');
-        const declareWinnerBtn = document.getElementById('declare-winner-btn');
-        const playersJoinedEl = document.getElementById('players-joined');
-        const prizePoolEl = document.getElementById('prize-pool');
-        const userIdEl = document.getElementById('user-id');
-        const messageBox = document.getElementById('message-box');
-        const winnerDisplay = document.getElementById('winner-display');
-        const winnerNameEl = document.getElementById('winner-name');
-        const pictureCards = document.querySelectorAll('.picture-card');
-      
-        // Initialize the game
-        function initGame() {
-          userIdEl.textContent = gameState.currentUserId;
-          updateGameStatus();
-          
-          // Set random lucky picture (1-10)
-          gameState.luckyPictureId = Math.floor(Math.random() * 10) + 1;
-          console.log(`Lucky picture is: ${gameState.luckyPictureId}`); // For debugging
-          
-          // Set up event listeners
-          setupEventListeners();
-        }
-      
-        // Generate a random user ID
-        function generateUserId() {
-          return 'user-' + Math.random().toString(36).substr(2, 9);
-        }
-      
-        // Update game status display
-        function updateGameStatus() {
-          const playerCount = Object.keys(gameState.players).length;
-          playersJoinedEl.textContent = playerCount;
-          prizePoolEl.textContent = gameState.prizePool.toFixed(2);
-          
-          // Enable/disable buttons based on game state
-          joinGameBtn.disabled = gameState.players[gameState.currentUserId] !== undefined;
-          declareWinnerBtn.disabled = playerCount < 10 || gameState.winnerDeclared;
-        }
-      
-        // Set up event listeners
-        function setupEventListeners() {
-          // Join game button
-          joinGameBtn.addEventListener('click', () => {
-            joinGame();
-          });
-          
-          // Declare winner button (only for admin)
-          declareWinnerBtn.addEventListener('click', () => {
-            declareWinner();
-          });
-          
-          // Picture selection
-          pictureCards.forEach(card => {
-            card.addEventListener('click', () => {
-              if (!gameState.gameStarted || gameState.winnerDeclared) return;
-              
-              const pictureId = parseInt(card.dataset.id);
-              selectPicture(pictureId);
-            });
-          });
-        }
-      
-        // Join the game
-        function joinGame() {
-          if (gameState.players[gameState.currentUserId]) {
-            showMessage('You have already joined the game!');
-            return;
-          }
-          
-          // In a real app, you would integrate with a payment system here
-          // For this demo, we'll simulate the deposit
-          const depositAmount = gameState.depositAmount;
-          
-          gameState.players[gameState.currentUserId] = {
-            id: gameState.currentUserId,
-            hasDeposited: true,
-            depositAmount: depositAmount,
-            selectedPicture: null,
-            isWinner: false
-          };
-          
-          gameState.prizePool += depositAmount;
-          
-          showMessage(`You have successfully deposited $${depositAmount.toFixed(2)} and joined the game!`);
-          updateGameStatus();
-          
-          // Check if we can start the game (10 players)
-          if (Object.keys(gameState.players).length >= 10) {
-            startGame();
-          }
-        }
-      
-        // Start the game when we have 10 players
-        function startGame() {
-          gameState.gameStarted = true;
-          showMessage('Game has started! Please select your picture.');
-        }
-      
-        // Select a picture
-        function selectPicture(pictureId) {
-          if (!gameState.players[gameState.currentUserId]?.hasDeposited) {
-            showMessage('You need to deposit and join the game first!');
-            return;
-          }
-          
-          if (gameState.players[gameState.currentUserId].selectedPicture) {
-            showMessage('You have already selected a picture!');
-            return;
-          }
-          
-          // Check if picture is already taken by another player
-          const pictureTaken = Object.values(gameState.players).some(
-            player => player.selectedPicture === pictureId
-          );
-          
-          if (pictureTaken) {
-            showMessage('This picture has already been selected by another player!');
-            return;
-          }
-          
-          // Update player's selected picture
-          gameState.players[gameState.currentUserId].selectedPicture = pictureId;
-          gameState.selectedPicture = pictureId;
-          
-          // Update UI
-          pictureCards.forEach(card => {
-            card.classList.remove('selected');
-            if (parseInt(card.dataset.id) === pictureId) {
-              card.classList.add('selected');
+        document.addEventListener('DOMContentLoaded', () => {
+            const NUM_BOXES = 6; // Total number of boxes
+            const DEPOSIT_AMOUNT = 10; // GHS per player
+            const PLAYER_PREFIX = "Player_"; // Prefix for simulated player IDs
+
+            let potAmount = 0;
+            let boxes = []; // Array of box objects: { id, element, selectedByPlayerId }
+            let playersJoined = 0;
+            let currentPlayerUniqueId = 0; // Increments for each simulated player
+            let gamePhase = 'joining'; // 'joining', 'picking', 'revealing', 'ended'
+            let selectedBoxElement = null; // To store the currently selected box element by the modal-triggered player
+
+            // DOM Elements
+            const boxesContainer = document.getElementById('boxesContainer');
+            const currentPotSpan = document.getElementById('currentPot');
+            const playersJoinedSpan = document.getElementById('playersJoined');
+            const numBoxesDisplaySpan = document.getElementById('numBoxesDisplay');
+            const messageArea = document.getElementById('messageArea');
+            const startGameBtn = document.getElementById('startGameBtn');
+            const resetGameBtn = document.getElementById('resetGameBtn');
+            const depositModal = document.getElementById('depositModal');
+            const usernameInput = document.getElementById('usernameInput');
+            const confirmDepositBtn = document.getElementById('confirmDepositBtn');
+
+            // Set initial box count display
+            numBoxesDisplaySpan.textContent = NUM_BOXES;
+
+            function initializeGame() {
+                potAmount = 0;
+                playersJoined = 0;
+                currentPlayerUniqueId = 0;
+                boxes = []; // Clear previous box data
+                gamePhase = 'joining';
+                selectedBoxElement = null;
+
+                // Update UI elements
+                currentPotSpan.textContent = `GHS ${potAmount}`;
+                playersJoinedSpan.textContent = playersJoined;
+                messageArea.innerHTML = 'Click "Join Game" to start!';
+                startGameBtn.style.display = 'block';
+                resetGameBtn.style.display = 'none';
+                depositModal.classList.remove('visible'); // Hide modal if open
+                usernameInput.value = ''; // Clear username input
+
+                // Clear and (re)create boxes
+                boxesContainer.innerHTML = '';
+                for (let i = 1; i <= NUM_BOXES; i++) {
+                    const boxElement = document.createElement('div');
+                    boxElement.classList.add('box');
+                    boxElement.dataset.boxId = i; // Store box ID in dataset
+                    boxElement.innerHTML = `<i class="fa-solid fa-gift"></i><span class="player-id"></span>`; // Add icon and player ID span
+                    
+                    // Store reference to box element and its state
+                    boxes.push({
+                        id: i,
+                        element: boxElement,
+                        selectedByPlayerId: null,
+                        isWinningBox: false
+                    });
+
+                    boxElement.addEventListener('click', () => handleBoxClick(boxElement));
+                    boxesContainer.appendChild(boxElement);
+                }
             }
-          });
-          
-          showMessage(`You have selected Picture ${pictureId}! Waiting for other players...`);
-          
-          // Check if all players have selected pictures
-          checkAllPicturesSelected();
-        }
-      
-        // Check if all players have selected pictures
-        function checkAllPicturesSelected() {
-          const allSelected = Object.values(gameState.players).every(
-            player => player.selectedPicture !== null
-          );
-          
-          if (allSelected && Object.keys(gameState.players).length >= 10) {
-            showMessage('All players have selected pictures. Ready to declare winner!');
-            declareWinnerBtn.disabled = false;
-          }
-        }
-      
-        // Declare the winner
-        function declareWinner() {
-          if (gameState.winnerDeclared) return;
-          
-          // Find the winner (player who selected the lucky picture)
-          let winner = null;
-          for (const playerId in gameState.players) {
-            if (gameState.players[playerId].selectedPicture === gameState.luckyPictureId) {
-              winner = gameState.players[playerId];
-              winner.isWinner = true;
-              break;
+
+            function showModal() {
+                depositModal.classList.add('visible');
+                usernameInput.focus();
+                // Store the box that triggered the modal, if applicable
+                // This is used when a box is clicked *before* the modal is shown
             }
-          }
-          
-          if (winner) {
-            gameState.winnerDeclared = true;
-            winnerDisplay.classList.remove('hidden');
-            winnerNameEl.textContent = winner.id;
-            
-            // Highlight the winning picture
-            pictureCards.forEach(card => {
-              if (parseInt(card.dataset.id) === gameState.luckyPictureId) {
-                card.classList.add('selected');
-                card.style.borderColor = '#10b981'; // Green border
-                card.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.6)';
-              }
+
+            function hideModal() {
+                depositModal.classList.remove('visible');
+            }
+
+            // Function to handle clicking a box
+            function handleBoxClick(boxElement) {
+                if (gamePhase !== 'picking') {
+                    messageArea.textContent = "Please wait for your turn or click 'Join Game' first!";
+                    return;
+                }
+
+                const boxId = parseInt(boxElement.dataset.boxId);
+                const boxData = boxes.find(b => b.id === boxId);
+
+                if (boxData.selectedByPlayerId !== null) {
+                    messageArea.textContent = `Box ${boxId} is already taken! Please choose another.`;
+                    return;
+                }
+
+                // If the modal is not visible, show it to get username
+                if (!depositModal.classList.contains('visible')) {
+                    selectedBoxElement = boxElement; // Store the clicked box
+                    showModal();
+                }
+            }
+
+            // Function to handle confirming deposit from the modal
+            confirmDepositBtn.addEventListener('click', () => {
+                const username = usernameInput.value.trim();
+                if (!username) {
+                    messageArea.textContent = "Please enter a username to join!";
+                    return;
+                }
+
+                if (!selectedBoxElement) {
+                     messageArea.textContent = "Error: No box selected. Please try again.";
+                     hideModal();
+                     return;
+                }
+                
+                const boxId = parseInt(selectedBoxElement.dataset.boxId);
+                const boxData = boxes.find(b => b.id === boxId);
+
+                if (boxData.selectedByPlayerId !== null) {
+                    messageArea.textContent = `Box ${boxId} is already taken! Choose another.`;
+                    hideModal();
+                    return;
+                }
+
+                hideModal(); // Hide the modal after confirmation
+
+                // Simulate deposit
+                potAmount += DEPOSIT_AMOUNT;
+                playersJoined++;
+                currentPlayerUniqueId++; // Assign a unique ID for this 'player'
+
+                boxData.selectedByPlayerId = `${PLAYER_PREFIX}${currentPlayerUniqueId}_${username}`; // Assign this box to the 'player'
+
+                // Update UI
+                selectedBoxElement.classList.add('selected');
+                selectedBoxElement.querySelector('.fa-solid').style.display = 'none'; // Hide gift icon
+                const playerIdSpan = selectedBoxElement.querySelector('.player-id');
+                playerIdSpan.textContent = `Chosen by ${username}`;
+                playerIdSpan.style.display = 'block';
+
+                currentPotSpan.textContent = `GHS ${potAmount}`;
+                playersJoinedSpan.textContent = playersJoined;
+
+                messageArea.textContent = `${username} chose Box ${boxId}. Pot is GHS ${potAmount}.`;
+
+                selectedBoxElement = null; // Clear the stored box after processing
+
+                // Check if all boxes are selected
+                if (playersJoined === NUM_BOXES) {
+                    gamePhase = 'revealing';
+                    messageArea.innerHTML = "All boxes chosen! <br> Revealing the winning box in 3...";
+                    disableAllBoxes(); // Prevent further clicks
+                    setTimeout(() => messageArea.innerHTML = "All boxes chosen! <br> Revealing the winning box in 2...", 1000);
+                    setTimeout(() => messageArea.innerHTML = "All boxes chosen! <br> Revealing the winning box in 1...", 2000);
+                    setTimeout(declareWinner, 3000);
+                } else {
+                    // Prompt for next player
+                    messageArea.textContent = `Another player can now choose a box! Current pot: GHS ${potAmount}.`;
+                }
             });
-            
-            showMessage(`Congratulations to ${winner.id} for winning $${gameState.prizePool.toFixed(2)}!`);
-          } else {
-            showMessage('No winner found! This should not happen.');
-          }
-          
-          declareWinnerBtn.disabled = true;
-        }
-      
-        // Show message to user
-        function showMessage(message) {
-          messageBox.textContent = message;
-        }
-      
-        // Initialize the game when the page loads
-        document.addEventListener('DOMContentLoaded', initGame);
-      </script>
-  </body>
+
+            startGameBtn.addEventListener('click', () => {
+                gamePhase = 'picking';
+                messageArea.textContent = `Choose a box to deposit GHS ${DEPOSIT_AMOUNT}!`;
+                startGameBtn.style.display = 'none';
+                // Trigger the modal to simulate the first player joining
+                showModal();
+            });
+
+            resetGameBtn.addEventListener('click', initializeGame);
+
+            function declareWinner() {
+                const winningBoxIndex = Math.floor(Math.random() * NUM_BOXES);
+                const winningBox = boxes[winningBoxIndex];
+                winningBox.isWinningBox = true;
+
+                // Reveal all boxes
+                boxes.forEach(boxData => {
+                    const boxElement = boxData.element;
+                    boxElement.classList.remove('selected'); // Remove selected style
+                    boxElement.classList.add('disabled'); // Make non-interactive
+                    boxElement.querySelector('.fa-solid').style.display = 'none'; // Ensure gift icon is hidden
+                    boxElement.querySelector('.player-id').style.display = 'block'; // Ensure player ID is visible
+                    
+                    if (boxData.isWinningBox) {
+                        boxElement.classList.add('winner');
+                        boxElement.innerHTML = `<i class="fas fa-trophy"></i><br><span style="font-size:0.4em;">WINNER!</span><br><span class="player-id">${boxData.selectedByPlayerId.split('_')[1]}</span>`;
+                    } else {
+                        boxElement.classList.add('loser');
+                        boxElement.innerHTML = `<i class="fas fa-times-circle"></i><br><span style="font-size:0.4em;">LOST</span><br><span class="player-id">${boxData.selectedByPlayerId.split('_')[1]}</span>`;
+                    }
+                });
+
+                if (winningBox.selectedByPlayerId) {
+                    const winnerUsername = winningBox.selectedByPlayerId.split('_')[1];
+                    messageArea.innerHTML = `🌟 **The Winning Box is #${winningBox.id}!** 🌟<br>Chosen by **${winnerUsername}**! They take home the grand total of <span style="color:#ffeb3b; font-weight:bold;">GHS ${potAmount}</span>!`;
+                } else {
+                    // This scenario should not happen if all boxes are always selected by a player
+                    messageArea.innerHTML = `No player selected the winning Box #${winningBox.id}. The pot rolls over!`;
+                }
+
+                resetGameBtn.style.display = 'block';
+            }
+
+            function disableAllBoxes() {
+                boxes.forEach(boxData => {
+                    boxData.element.removeEventListener('click', handleBoxClick);
+                    boxData.element.style.cursor = 'not-allowed';
+                });
+            }
+
+            // Initialize the game when the page loads
+            initializeGame();
+        });
+    </script>
+</body>
 </html>
